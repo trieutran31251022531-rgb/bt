@@ -1,0 +1,20 @@
+import folium
+from folium.plugins import HeatMap
+import random
+center = [10.7769, 106.7009]
+def generate_cluster(center_lat, center_lon, num_points, spread=0.01):
+    return [
+        [
+            center_lat + random.uniform(-spread, spread),
+            center_lon + random.uniform(-spread, spread)
+        ]
+        for _ in range(num_points)
+    ]
+
+data = []
+data += generate_cluster(10.7769, 106.7009, 200, 0.005)
+data += generate_cluster(10.8000, 106.7100, 120, 0.007)
+data += generate_cluster(10.7300, 106.7200, 60, 0.01)
+m = folium.Map(location=center, zoom_start=12)
+HeatMap(data,radius=15,blur=20,min_opacity=0.3).add_to(m)
+m
