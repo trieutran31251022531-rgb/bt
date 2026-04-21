@@ -1,0 +1,43 @@
+from geopy.geocoders import Nominatim
+from geopy.distance import geodesic
+import folium
+import time
+geolocator = Nominatim(user_agent="geo_app")
+addresses = [
+    "Ben Thanh Market, Ho Chi Minh City, Vietnam",
+    "Tan Son Nhat Airport, Ho Chi Minh City, Vietnam",
+    "Saigon Notre-Dame Cathedral, Ho Chi Minh City, Vietnam",
+    "Independence Palace, Ho Chi Minh City, Vietnam",
+    "Landmark 81, Ho Chi Minh City, Vietnam",
+    "Saigon Central Post Office, Ho Chi Minh City, Vietnam",
+    "Pham Ngu Lao Street, Ho Chi Minh City, Vietnam",
+    "Bitexco Financial Tower, Ho Chi Minh City, Vietnam",
+    "University of Science, VNUHCM, Ho Chi Minh City, Vietnam",
+    "District 7, Ho Chi Minh City, Vietnam"
+]
+
+locations = []
+for addr in addresses:
+    try:
+        location = geolocator.geocode(addr)
+        if location:
+            locations.append({
+                "address": addr,
+                "lat": location.latitude,
+                "lon": location.longitude
+            })
+        time.sleep(1)
+    except:
+        print(f"Lỗi khi xử lý: {addr}")
+center_point = (locations[0]["lat"], locations[0]["lon"])
+map_folium = folium.Map(location=center_point, zoom_start=13)
+folium.Marker(center_point,popup="Trung tâm (Bến Thành)",icon=folium.Icon(color='red')).add_to(map_folium)
+
+for loc in locations:
+    point = (loc["lat"], loc["lon"])
+    distance = geodesic(center_point, point).km
+
+    folium.Marker( point,popup=f"{loc['address']}<br>Khoảng cách: {distance:.2f} km",icon=folium.Icon(color='blue')).add_to(map_folium)
+
+    folium.PolyLine([center_point, point],color="green",weight=2,opacity=0.7).add_to(map_folium)
+map_folium
