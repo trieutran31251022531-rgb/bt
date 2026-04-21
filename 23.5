@@ -1,0 +1,25 @@
+import folium
+import geopandas as gpd
+from shapely.geometry import Point
+center_lat, center_lon = 10.79368188201746, 106.62747869877164
+gdf_center = gpd.GeoDataFrame(
+    geometry=[Point(center_lon, center_lat)],
+    crs="EPSG:4326"
+)
+gdf_center = gdf_center.to_crs(epsg=3857)
+buffer_3km = gdf_center.buffer(3000)
+buffer_5km = gdf_center.buffer(5000)
+buffer_10km = gdf_center.buffer(10000)
+buffer_3km = gpd.GeoSeries(buffer_3km, crs="EPSG:3857").to_crs(epsg=4326)
+buffer_5km = gpd.GeoSeries(buffer_5km, crs="EPSG:3857").to_crs(epsg=4326)
+buffer_10km = gpd.GeoSeries(buffer_10km, crs="EPSG:3857").to_crs(epsg=4326)
+m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
+folium.Marker(
+    [center_lat, center_lon],
+    popup="Trung tâm phân phối",
+    icon=folium.Icon(color="red")
+).add_to(m)
+folium.GeoJson(buffer_3km).add_to(m)
+folium.GeoJson(buffer_5km).add_to(m)
+folium.GeoJson(buffer_10km).add_to(m)
+m
