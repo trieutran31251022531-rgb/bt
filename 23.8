@@ -1,0 +1,61 @@
+import folium
+import pandas as pd
+import random
+from math import radians, sin, cos, sqrt, atan2
+
+center = (10.7769, 106.7009)
+
+def random_point(center, spread=0.02):
+    return (
+        center[0] + random.uniform(-spread, spread),
+        center[1] + random.uniform(-spread, spread)
+    )
+num_drivers = 5
+num_customers = 5
+
+drivers = [random_point(center) for _ in range(num_drivers)]
+customers = [random_point(center) for _ in range(num_customers)]
+
+def distance(p1, p2):
+    R = 6371  # km
+    dlat = radians(p2[0] - p1[0])
+    dlon = radians(p2[1] - p1[1])
+    
+    a = sin(dlat/2)**2 + cos(radians(p1[0])) * cos(radians(p2[0])) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    
+    return R * c
+
+matches = []
+
+available_drivers = drivers.copy()
+
+for cust in customers:
+    nearest_driver = min(available_drivers, key=lambda d: distance(d, cust))
+    
+    matches.append((nearest_driver, cust))
+    available_drivers.remove(nearest_driver)
+
+m = folium.Map(location=center, zoom_start=13)
+
+for d in drivers:
+    folium.Marker(
+        d,
+        popup="Driver",
+        icon=folium.Icon(color="blue", icon="car")
+    ).add_to(m)
+
+for c in customers:
+    folium.Marker(
+        c,
+        popup="Customer",
+        icon=folium.Icon(color="red", icon="user")
+    ).add_to(m)
+
+for d, c in matches:
+    folium.PolyLine(
+        [d, c],
+        color="green",
+        weight=3
+    ).add_to(m)
+m
