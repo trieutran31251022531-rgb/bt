@@ -1,0 +1,10 @@
+import pandas as pd
+import folium
+data = pd.DataFrame({'lat':[10.769398998594852,10.76091955298648,10.774824348377345,10.754379308000278,10.777440812859673],
+                     'lon':[106.67102523732575,106.6636869843888, 106.67593985784492,106.66256904553025,106.6661288483956],
+                     'name':['Bệnh viện nhi đồng 1','Sân vận động Thống Nhất','The Coffee House - Cao Thắng','Miếu Bà Thiên Hậu - Hội Quán Tuệ Thành','Làng Nướng Nam Bộ']})
+m = folium.Map(location=[10.762622, 106.660172],zoom_start=16)
+folium.Marker([10.773355444355499, 106.67759266663155],popup="UEH cơ sở C",tooltip="Click vào",icon=folium.Icon(color="red")).add_to(m)
+for i,row in data.iterrows():
+  folium.Marker([row['lat'],row['lon']],popup=row['name']).add_to(m)
+m
