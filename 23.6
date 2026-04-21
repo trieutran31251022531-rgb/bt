@@ -1,0 +1,16 @@
+import osmnx as ox
+import networkx as nx
+import matplotlib.pyplot as plt
+place = "Tan Phu, Ho Chi Minh City, Vietnam"
+G = ox.graph_from_place(place, network_type='drive')
+num_nodes = len(G.nodes)
+num_edges = len(G.edges)
+edge_lengths = [data['length'] for u, v, data in G.edges(data=True)]
+avg_length = sum(edge_lengths) / len(edge_lengths)
+area = ox.geocode_to_gdf(place).geometry.area.values[0]
+density = num_edges / area
+print(f"Số nút giao: {num_nodes}")
+print(f"Số đoạn đường: {num_edges}")
+print(f"Chiều dài trung bình: {avg_length:.2f} m")
+print(f"Mật độ mạng: {density:.6f} edges/m²")
+fig, ax = ox.plot_graph(G, node_size=5, edge_linewidth=0.5)
